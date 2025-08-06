@@ -47,24 +47,24 @@ class DecoderBlock(nn.Module):
 class UNet(nn.Module):
     def __init__(self, in_channels=6, num_classes=2):
         super(UNet, self).__init__()
-        
+        factor = 4
         # Encoder path
-        self.encoder1 = EncoderBlock(in_channels, 64)
-        self.encoder2 = EncoderBlock(64, 128)
-        self.encoder3 = EncoderBlock(128, 256)
-        self.encoder4 = EncoderBlock(256, 512)
+        self.encoder1 = EncoderBlock(in_channels, 64 // factor)
+        self.encoder2 = EncoderBlock(64 // factor, 128 // factor)
+        self.encoder3 = EncoderBlock(128 // factor, 256 // factor)
+        self.encoder4 = EncoderBlock(256 // factor, 512 // factor)
         
         # Bottleneck
-        self.bottleneck = ConvBlock(512, 1024)
+        self.bottleneck = ConvBlock(512 // factor, 1024 // factor)
         
         # Decoder path
-        self.decoder1 = DecoderBlock(1024, 512, 512)
-        self.decoder2 = DecoderBlock(512, 256, 256)
-        self.decoder3 = DecoderBlock(256, 128, 128)
-        self.decoder4 = DecoderBlock(128, 64, 64)
+        self.decoder1 = DecoderBlock(1024 // factor, 512 // factor, 512 // factor)
+        self.decoder2 = DecoderBlock(512 // factor, 256 // factor, 256 // factor)
+        self.decoder3 = DecoderBlock(256 // factor, 128 // factor, 128 // factor)
+        self.decoder4 = DecoderBlock(128 // factor, 64 // factor, 64 // factor)
         
         # Output layer
-        self.final_conv = nn.Conv2d(64, num_classes, kernel_size=1)
+        self.final_conv = nn.Conv2d(64 // factor, num_classes, kernel_size=1)
         
     def forward(self, x):
         # Encoder path
